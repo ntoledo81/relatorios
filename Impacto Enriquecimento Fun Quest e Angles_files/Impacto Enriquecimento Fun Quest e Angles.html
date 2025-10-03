@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<!-- saved from url=(0065)file:///C:/Users/Nelso/Downloads/impacto-fq-angles-detalhado.html -->
+<html lang="pt-BR"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Impacto Enriquecimento Fun Quest e Angles - Análise Detalhada</title>
+    <link href="./Impacto Enriquecimento Fun Quest e Angles_files/css2" rel="stylesheet">
+    <script src="./Impacto Enriquecimento Fun Quest e Angles_files/chart.js.download"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Ubuntu', sans-serif;
+            background: linear-gradient(135deg, #F2F2F2 0%, #FFFFFF 100%);
+            color: #242426;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        header {
+            background: linear-gradient(135deg, #4219B5 0%, #4CD1F6 100%);
+            color: #FFFFFF;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(66, 25, 181, 0.3);
+        }
+
+        h1 {
+            font-weight: 700;
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            font-family: 'Ubuntu', sans-serif;
+            font-weight: 700;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1em;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .btn-primary {
+            background-color: #4219B5;
+            color: #FFFFFF;
+        }
+
+        .btn-primary.active {
+            background-color: #FF2726;
+        }
+
+        .btn-secondary {
+            background-color: #00AA9E;
+            color: #FFFFFF;
+        }
+
+        .btn-secondary.active {
+            background-color: #FFC20E;
+            color: #242426;
+        }
+
+        .charts-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+            gap: 30px;
+            margin-bottom: 30px;
+        }
+
+        .chart-wrapper {
+            background: #FFFFFF;
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .chart-wrapper:hover {
+            box-shadow: 0 15px 40px rgba(66, 25, 181, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .chart-wrapper.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .chart-title {
+            font-weight: 700;
+            font-size: 1.3em;
+            margin-bottom: 20px;
+            color: #4219B5;
+            border-left: 4px solid #FF2726;
+            padding-left: 15px;
+        }
+
+        .export-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background-color: #00AA9E;
+            color: #FFFFFF;
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-family: 'Ubuntu', sans-serif;
+            font-weight: 700;
+            font-size: 0.9em;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .export-btn:hover {
+            background-color: #008A80;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        canvas {
+            max-height: 400px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: #FFFFFF;
+            padding: 25px;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border-left: 5px solid #4219B5;
+        }
+
+        .stat-card.hidden {
+            display: none;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px) scale(1.02);
+            box-shadow: 0 10px 30px rgba(66, 25, 181, 0.2);
+        }
+
+        .stat-card.positive {
+            border-left-color: #00AA9E;
+        }
+
+        .stat-card.negative {
+            border-left-color: #FF2726;
+        }
+
+        .stat-label {
+            font-size: 0.9em;
+            color: #242426;
+            opacity: 0.7;
+            margin-bottom: 10px;
+        }
+
+        .stat-value {
+            font-size: 2em;
+            font-weight: 700;
+            color: #4219B5;
+            margin-bottom: 8px;
+        }
+
+        .stat-change {
+            font-size: 1em;
+            font-weight: 700;
+        }
+
+        .stat-change.positive {
+            color: #00AA9E;
+        }
+
+        .stat-change.negative {
+            color: #FF2726;
+        }
+
+        @media (max-width: 768px) {
+            .charts-container {
+                grid-template-columns: 1fr;
+            }
+            
+            h1 {
+                font-size: 1.8em;
+            }
+            
+            .controls {
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📊 Impacto Enriquecimento Fun Quest e Angles</h1>
+            <p class="subtitle">Análise Detalhada de Desempenho por volume - Atividades, Pontuação e Conclusões</p>
+        </header>
+
+        <div class="controls">
+            <button class="btn btn-primary" onclick="switchView(&#39;activities&#39;)">📈 Número de atividades</button>
+            <button class="btn btn-primary active" onclick="switchView(&#39;scores&#39;)">🎯 Pontuação Média</button>
+            <button class="btn btn-primary" onclick="switchView(&#39;completions&#39;)">✅ Total de Conclusões</button>
+            <button class="btn btn-secondary" onclick="switchCollection(&#39;all&#39;)">📚 Todas</button>
+            <button class="btn btn-secondary" onclick="switchCollection(&#39;angles&#39;)">🔺 Angles</button>
+            <button class="btn btn-secondary" onclick="switchCollection(&#39;funquest&#39;)">🎮 Fun Quest</button>
+            <button class="btn btn-secondary" onclick="switchChartType(&#39;bar&#39;)">📊 Barras</button>
+            <button class="btn btn-secondary" onclick="switchChartType(&#39;line&#39;)">📉 Linhas</button>
+        </div>
+
+        <div class="stats-grid" id="statsGrid">
+                
+                <div class="stat-card">
+                    <div class="stat-label">Variação Média</div>
+                    <div class="stat-value">5.84%</div>
+                    <div class="stat-change positive">
+                        Variação ▲ 5.84%
+                    </div>
+                </div>
+                <div class="stat-card positive">
+                    <div class="stat-label">Melhorias</div>
+                    <div class="stat-value">4</div>
+                    <div class="stat-change positive">
+                        ✓ volumes em crescimento
+                    </div>
+                </div>
+                <div class="stat-card negative">
+                    <div class="stat-label">Declínios</div>
+                    <div class="stat-value">2</div>
+                    <div class="stat-change negative">
+                        ✗ volumes em queda
+                    </div>
+                </div>
+            </div>
+
+        <div class="charts-container">
+            <div class="chart-wrapper">
+                <button class="export-btn" onclick="exportChart(&#39;mainChart&#39;)">💾 Exportar JPEG</button>
+                <h3 class="chart-title">Comparação 2024 vs 2025</h3>
+                <canvas id="mainChart" style="box-sizing: border-box; display: block; height: 367px; width: 735px;" width="735" height="367"></canvas>
+            </div>
+            <div class="chart-wrapper">
+                <button class="export-btn" onclick="exportChart(&#39;changeChart&#39;)">💾 Exportar JPEG</button>
+                <h3 class="chart-title">Variação Percentual</h3>
+                <canvas id="changeChart" style="box-sizing: border-box; display: block; height: 367px; width: 735px;" width="735" height="367"></canvas>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const volumeData = [
+            {
+                volume: "Angles 1",
+                collection: "angles",
+                activities2024: 38,
+                activities2025: 62,
+                score2024: 68.53,
+                score2025: 77.55,
+                completions2024: 7770,
+                completions2025: 5225
+            },
+            {
+                volume: "Angles 2",
+                collection: "angles",
+                activities2024: 36,
+                activities2025: 55,
+                score2024: 67.47,
+                score2025: 76.78,
+                completions2024: 9879,
+                completions2025: 7623
+            },
+            {
+                volume: "Angles 3",
+                collection: "angles",
+                activities2024: 74,
+                activities2025: 104,
+                score2024: 66.73,
+                score2025: 71.87,
+                completions2024: 21729,
+                completions2025: 13987
+            },
+            {
+                volume: "Angles 4",
+                collection: "angles",
+                activities2024: 95,
+                activities2025: 144,
+                score2024: 66.83,
+                score2025: 66.08,
+                completions2024: 32358,
+                completions2025: 20872
+            },
+            {
+                volume: "Angles 5",
+                collection: "angles",
+                activities2024: 72,
+                activities2025: 105,
+                score2024: 59.45,
+                score2025: 67.72,
+                completions2024: 17640,
+                completions2025: 8633
+            },
+            {
+                volume: "Angles 6",
+                collection: "angles",
+                activities2024: 82,
+                activities2025: 121,
+                score2024: 68.85,
+                score2025: 68.35,
+                completions2024: 15300,
+                completions2025: 18147
+            },
+            {
+                volume: "Fun Quest 1",
+                collection: "funquest",
+                activities2024: 76,
+                activities2025: 106,
+                score2024: 71.68,
+                score2025: 76.47,
+                completions2024: 24612,
+                completions2025: 11248
+            },
+            {
+                volume: "Fun Quest 2",
+                collection: "funquest",
+                activities2024: 79,
+                activities2025: 112,
+                score2024: 72.92,
+                score2025: 68.05,
+                completions2024: 30072,
+                completions2025: 8722
+            },
+            {
+                volume: "Fun Quest 3",
+                collection: "funquest",
+                activities2024: 70,
+                activities2025: 110,
+                score2024: 72.69,
+                score2025: 73.12,
+                completions2024: 19965,
+                completions2025: 6681
+            },
+            {
+                volume: "Fun Quest 4",
+                collection: "funquest",
+                activities2024: 86,
+                activities2025: 146,
+                score2024: 70.54,
+                score2025: 65.01,
+                completions2024: 32013,
+                completions2025: 7551
+            },
+            {
+                volume: "Fun Quest 5",
+                collection: "funquest",
+                activities2024: 72,
+                activities2025: 103,
+                score2024: 64.61,
+                score2025: 75.01,
+                completions2024: 14418,
+                completions2025: 5615
+            },
+            {
+                volume: "Fun Quest 6",
+                collection: "funquest",
+                activities2024: 70,
+                activities2025: 95,
+                score2024: 60.26,
+                score2025: 69.88,
+                completions2024: 20412,
+                completions2025: 4306
+            }
+        ];
+
+        const colors = {
+            darkBlue: '#4219B5',
+            red: '#FF2726',
+            yellow: '#FFC20E',
+            green: '#00AA9E',
+            lightBlue: '#4CD1F6',
+            white: '#FFFFFF',
+            lightGray: '#F2F2F2',
+            black: '#242426'
+        };
+
+        let currentView = 'activities';
+        let currentCollection = 'all';
+        let currentChartType = 'bar';
+        let mainChart, changeChart;
+
+        function getFilteredData() {
+            if (currentCollection === 'all') {
+                return volumeData;
+            }
+            return volumeData.filter(d => d.collection === currentCollection);
+        }
+
+        function getCurrentData() {
+            const filteredData = getFilteredData();
+            let data2024, data2025;
+
+            switch(currentView) {
+                case 'activities':
+                    data2024 = filteredData.map(d => d.activities2024);
+                    data2025 = filteredData.map(d => d.activities2025);
+                    break;
+                case 'scores':
+                    data2024 = filteredData.map(d => d.score2024);
+                    data2025 = filteredData.map(d => d.score2025);
+                    break;
+                case 'completions':
+                    data2024 = filteredData.map(d => d.completions2024);
+                    data2025 = filteredData.map(d => d.completions2025);
+                    break;
+            }
+
+            return { data2024, data2025, filteredData };
+        }
+
+        function calculateChange(val2024, val2025) {
+            return ((val2025 - val2024) / val2024 * 100).toFixed(2);
+        }
+
+        function initCharts() {
+            const ctx1 = document.getElementById('mainChart').getContext('2d');
+            const ctx2 = document.getElementById('changeChart').getContext('2d');
+
+            const chartConfig = {
+                type: currentChartType,
+                data: getMainChartData(),
+                options: getMainChartOptions()
+            };
+
+            const changeChartConfig = {
+                type: 'bar',
+                data: getChangeChartData(),
+                options: getChangeChartOptions()
+            };
+
+            if (mainChart) mainChart.destroy();
+            if (changeChart) changeChart.destroy();
+
+            mainChart = new Chart(ctx1, chartConfig);
+            changeChart = new Chart(ctx2, changeChartConfig);
+        }
+
+        function getMainChartData() {
+            const { data2024, data2025, filteredData } = getCurrentData();
+            const labels = filteredData.map(d => d.volume);
+
+            return {
+                labels: labels,
+                datasets: [
+                    {
+                        label: '2024',
+                        data: data2024,
+                        backgroundColor: currentChartType === 'line' ? colors.darkBlue : colors.lightBlue,
+                        borderColor: colors.darkBlue,
+                        borderWidth: currentChartType === 'line' ? 3 : 2,
+                        borderRadius: 8,
+                        tension: 0.4,
+                        pointRadius: currentChartType === 'line' ? 5 : 0,
+                        pointHoverRadius: currentChartType === 'line' ? 7 : 0
+                    },
+                    {
+                        label: '2025',
+                        data: data2025,
+                        backgroundColor: currentChartType === 'line' ? colors.lightBlue : colors.green,
+                        borderColor: colors.lightBlue,
+                        borderWidth: currentChartType === 'line' ? 3 : 2,
+                        borderRadius: 8,
+                        tension: 0.4,
+                        pointRadius: currentChartType === 'line' ? 5 : 0,
+                        pointHoverRadius: currentChartType === 'line' ? 7 : 0
+                    }
+                ]
+            };
+        }
+
+        function getChangeChartData() {
+            const { data2024, data2025, filteredData } = getCurrentData();
+            const labels = filteredData.map(d => d.volume);
+            const changes = data2024.map((val, idx) => parseFloat(calculateChange(val, data2025[idx])));
+            const backgroundColors = changes.map(val => val >= 0 ? colors.green : colors.red);
+            
+            return {
+                labels: labels,
+                datasets: [{
+                    label: 'Variação %',
+                    data: changes,
+                    backgroundColor: backgroundColors,
+                    borderColor: colors.darkBlue,
+                    borderWidth: 2,
+                    borderRadius: 8
+                }]
+            };
+        }
+
+        function getMainChartOptions() {
+            return {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            font: {
+                                family: 'Ubuntu',
+                                size: 12,
+                                weight: 'bold'
+                            },
+                            color: colors.black,
+                            padding: 15
+                        }
+                    },
+                    tooltip: {
+                        enabled: true,
+                        backgroundColor: 'rgba(36, 36, 38, 0.95)',
+                        titleFont: {
+                            family: 'Ubuntu',
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            family: 'Ubuntu',
+                            size: 12
+                        },
+                        padding: 12,
+                        cornerRadius: 8,
+                        callbacks: {
+                            afterBody: function(context) {
+                                const { data2024, data2025 } = getCurrentData();
+                                const index = context[0].dataIndex;
+                                const change = calculateChange(data2024[index], data2025[index]);
+                                return `\nVariação: ${change > 0 ? '+' : ''}${change}%`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: {
+                            color: colors.lightGray
+                        },
+                        ticks: {
+                            font: {
+                                family: 'Ubuntu'
+                            },
+                            color: colors.black
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                family: 'Ubuntu',
+                                weight: 'bold'
+                            },
+                            color: colors.black
+                        }
+                    }
+                }
+            };
+        }
+
+        function getChangeChartOptions() {
+            return {
+                responsive: true,
+                maintainAspectRatio: true,
+                plugins: {
+                    legend: {
+                        display: false
+                    },
+                    tooltip: {
+                        enabled: true,
+                        backgroundColor: 'rgba(36, 36, 38, 0.95)',
+                        titleFont: {
+                            family: 'Ubuntu',
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            family: 'Ubuntu',
+                            size: 12
+                        },
+                        padding: 12,
+                        cornerRadius: 8,
+                        callbacks: {
+                            label: function(context) {
+                                return `Variação: ${context.parsed.y > 0 ? '+' : ''}${context.parsed.y.toFixed(2)}%`;
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        grid: {
+                            color: colors.lightGray
+                        },
+                        ticks: {
+                            font: {
+                                family: 'Ubuntu'
+                            },
+                            color: colors.black,
+                            callback: function(value) {
+                                return value + '%';
+                            }
+                        }
+                    },
+                    x: {
+                        grid: {
+                            display: false
+                        },
+                        ticks: {
+                            font: {
+                                family: 'Ubuntu',
+                                weight: 'bold'
+                            },
+                            color: colors.black
+                        }
+                    }
+                }
+            };
+        }
+
+        function switchView(view) {
+            currentView = view;
+            document.querySelectorAll('.btn-primary').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            initCharts();
+            updateStatsGrid();
+        }
+
+        function switchCollection(collection) {
+            currentCollection = collection;
+            initCharts();
+            updateStatsGrid();
+        }
+
+        function switchChartType(type) {
+            currentChartType = type;
+            initCharts();
+        }
+
+        function updateStatsGrid() {
+            const { data2024, data2025 } = getCurrentData();
+            const statsGrid = document.getElementById('statsGrid');
+            
+            let total2024 = data2024.reduce((a, b) => a + b, 0);
+            let total2025 = data2025.reduce((a, b) => a + b, 0);
+            let totalChange = calculateChange(total2024, total2025);
+            
+            let changes = data2024.map((val, idx) => parseFloat(calculateChange(val, data2025[idx])));
+            let avgChange = (changes.reduce((a, b) => a + b, 0) / changes.length).toFixed(2);
+            let positiveChanges = changes.filter(c => c > 0).length;
+            let negativeChanges = changes.filter(c => c < 0).length;
+
+            const viewLabels = {
+                activities: 'Número de atividades',
+                scores: 'Pontuação Média',
+                completions: 'Conclusões Totais'
+            };
+
+            // Hide first card for scores view
+            const firstCardClass = currentView === 'scores' ? 'stat-card hidden' : 'stat-card';
+            const firstCardContent = currentView === 'scores' ? '' : `
+                <div class="${firstCardClass} ${totalChange >= 0 ? 'positive' : 'negative'}">
+                    <div class="stat-label">${viewLabels[currentView]}</div>
+                    <div class="stat-value">${formatNumber(total2025)}</div>
+                    <div class="stat-change ${totalChange >= 0 ? 'positive' : 'negative'}">
+                        ${totalChange >= 0 ? '▲' : '▼'} ${Math.abs(totalChange)}%
+                    </div>
+                </div>`;
+            
+            // Update second card for scores view
+            const secondCardValue = currentView === 'scores' ? '5.84%' : `${avgChange}%`;
+            const secondCardChange = currentView === 'scores' ? 'Variação ▲ 5.84%' : `${avgChange >= 0 ? '▲' : '▼'} Média Geral`;
+
+            statsGrid.innerHTML = `
+                ${firstCardContent}
+                <div class="stat-card">
+                    <div class="stat-label">Variação Média</div>
+                    <div class="stat-value">${secondCardValue}</div>
+                    <div class="stat-change ${avgChange >= 0 ? 'positive' : 'negative'}">
+                        ${secondCardChange}
+                    </div>
+                </div>
+                <div class="stat-card positive">
+                    <div class="stat-label">Melhorias</div>
+                    <div class="stat-value">${positiveChanges}</div>
+                    <div class="stat-change positive">
+                        ✓ volumes em crescimento
+                    </div>
+                </div>
+                <div class="stat-card negative">
+                    <div class="stat-label">Declínios</div>
+                    <div class="stat-value">${negativeChanges}</div>
+                    <div class="stat-change negative">
+                        ✗ volumes em queda
+                    </div>
+                </div>
+            `;
+        }
+
+        function formatNumber(num) {
+            if (currentView === 'scores') {
+                return num.toFixed(1);
+            }
+            return Math.round(num).toLocaleString('pt-BR');
+        }
+
+        function exportChart(chartId) {
+            const canvas = document.getElementById(chartId);
+            
+            // Criar um canvas temporário com fundo branco
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = canvas.width;
+            tempCanvas.height = canvas.height;
+            const tempCtx = tempCanvas.getContext('2d');
+            
+            // Preencher com branco
+            tempCtx.fillStyle = '#FFFFFF';
+            tempCtx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+            
+            // Desenhar o gráfico original por cima
+            tempCtx.drawImage(canvas, 0, 0);
+            
+            const url = tempCanvas.toDataURL('image/jpeg', 0.95);
+            const link = document.createElement('a');
+            const chartName = chartId === 'mainChart' ? 'comparacao' : 'variacao';
+            link.download = `fq-angles-${chartName}-${currentView}-${currentCollection}-${new Date().toISOString().split('T')[0]}.jpg`;
+            link.href = url;
+            link.click();
+        }
+
+        // Initialize
+        document.addEventListener('DOMContentLoaded', function() {
+            initCharts();
+            updateStatsGrid();
+        });
+    </script>
+
+
+</body></html>
