@@ -1,0 +1,1023 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edify Play - Dashboard Interativo 2024-2025</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Ubuntu:wght@400;700&display=swap');
+        
+        :root {
+            --edify-white: #FFFFFF;
+            --edify-dark-blue: #4219B5;
+            --edify-red: #FF2726;
+            --edify-yellow: #FFC20E;
+            --edify-green: #00AA9E;
+            --edify-light-blue: #4CD1F6;
+            --edify-light-gray: #F2F2F2;
+            --edify-black: #242426;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Ubuntu', sans-serif;
+            background: linear-gradient(135deg, var(--edify-light-gray) 0%, #e8e8e8 100%);
+            color: var(--edify-black);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, var(--edify-dark-blue) 0%, #5a2dd4 100%);
+            color: var(--edify-white);
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 10px 30px rgba(66, 25, 181, 0.3);
+        }
+        
+        .header h1 {
+            font-size: 2.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+            font-weight: 400;
+        }
+        
+        .header .metadata {
+            display: flex;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .metadata-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: rgba(255, 255, 255, 0.1);
+            padding: 10px 20px;
+            border-radius: 8px;
+            backdrop-filter: blur(10px);
+        }
+        
+        .metadata-item .icon {
+            font-size: 1.3em;
+        }
+        
+        .main-container {
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 25px;
+            align-items: start;
+        }
+        
+        .sidebar {
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .filter-card {
+            background: var(--edify-white);
+            padding: 20px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+        }
+        
+        .filter-card h3 {
+            font-size: 1.1em;
+            font-weight: 700;
+            color: var(--edify-dark-blue);
+            margin-bottom: 15px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .filter-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        
+        .filter-option {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+            background: var(--edify-light-gray);
+            user-select: none;
+        }
+        
+        .filter-option:hover {
+            transform: translateX(5px);
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+        
+        .filter-option.active {
+            background: var(--edify-dark-blue);
+            color: var(--edify-white);
+            border-color: var(--edify-dark-blue);
+            font-weight: 700;
+        }
+        
+        .filter-option input[type="checkbox"] {
+            margin-right: 12px;
+            width: 20px;
+            height: 20px;
+            cursor: pointer;
+            accent-color: var(--edify-dark-blue);
+        }
+        
+        .filter-option.active input[type="checkbox"] {
+            accent-color: var(--edify-white);
+        }
+        
+        .filter-icon {
+            width: 30px;
+            height: 30px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-weight: 700;
+            margin-right: 10px;
+            font-size: 1.1em;
+        }
+        
+        .filter-option .filter-icon {
+            background: var(--edify-white);
+            color: var(--edify-black);
+        }
+        
+        .filter-option.active .filter-icon {
+            background: rgba(255, 255, 255, 0.2);
+            color: var(--edify-white);
+        }
+        
+        .icon-activity { color: var(--edify-dark-blue); }
+        .icon-bonus { color: var(--edify-red); }
+        .icon-checkpoint { color: var(--edify-green); }
+        .icon-greenhouse { color: var(--edify-yellow); }
+        
+        .chart-main {
+            background: var(--edify-white);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            min-height: 600px;
+        }
+        
+        .chart-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 25px;
+            padding-bottom: 20px;
+            border-bottom: 3px solid var(--edify-light-gray);
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+        
+        .chart-title-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        
+        .chart-main-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 15px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2em;
+            font-weight: 700;
+            background: linear-gradient(135deg, var(--edify-dark-blue) 0%, #5a2dd4 100%);
+            color: var(--edify-white);
+            box-shadow: 0 4px 15px rgba(66, 25, 181, 0.3);
+        }
+        
+        .chart-title-text h2 {
+            font-size: 1.8em;
+            font-weight: 700;
+            color: var(--edify-black);
+            margin-bottom: 5px;
+        }
+        
+        .chart-title-text .subtitle {
+            font-size: 1em;
+            color: #666;
+            font-weight: 400;
+        }
+        
+        .selection-badges {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        
+        .badge {
+            padding: 8px 15px;
+            border-radius: 8px;
+            font-size: 0.85em;
+            font-weight: 700;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .badge.premium {
+            background: var(--edify-dark-blue);
+            color: var(--edify-white);
+        }
+        
+        .badge.essential {
+            background: var(--edify-green);
+            color: var(--edify-white);
+        }
+        
+        .badge.count {
+            background: var(--edify-yellow);
+            color: var(--edify-black);
+        }
+        
+        .canvas-wrapper {
+            position: relative;
+            height: 500px;
+            margin-top: 20px;
+        }
+        
+        .legend-custom {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 25px;
+            padding-top: 20px;
+            border-top: 2px solid var(--edify-light-gray);
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-weight: 700;
+            font-size: 0.9em;
+            padding: 10px 15px;
+            background: var(--edify-light-gray);
+            border-radius: 10px;
+        }
+        
+        .legend-line {
+            width: 40px;
+            height: 3px;
+            border-radius: 2px;
+        }
+        
+        .legend-line.solid { background: var(--edify-dark-blue); }
+        .legend-line.dashed { 
+            background: linear-gradient(to right, var(--edify-dark-blue) 50%, transparent 50%);
+            background-size: 8px 3px;
+        }
+        .legend-line.dotted { 
+            background: linear-gradient(to right, var(--edify-dark-blue) 30%, transparent 30%);
+            background-size: 5px 3px;
+        }
+        
+        .empty-state {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 500px;
+            color: #999;
+        }
+        
+        .empty-state-icon {
+            font-size: 5em;
+            margin-bottom: 20px;
+            opacity: 0.3;
+        }
+        
+        .empty-state h3 {
+            font-size: 1.5em;
+            font-weight: 700;
+            margin-bottom: 10px;
+            color: var(--edify-black);
+        }
+        
+        .empty-state p {
+            font-size: 1.1em;
+        }
+        
+        .reset-btn {
+            margin-top: 15px;
+            padding: 12px 25px;
+            background: var(--edify-red);
+            color: var(--edify-white);
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Ubuntu', sans-serif;
+            font-weight: 700;
+            font-size: 0.95em;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 15px rgba(255, 39, 38, 0.3);
+        }
+        
+        .reset-btn:hover {
+            background: #dd1f1f;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(255, 39, 38, 0.4);
+        }
+        
+        .select-all-btn {
+            padding: 10px 15px;
+            background: var(--edify-light-gray);
+            border: 2px solid var(--edify-dark-blue);
+            color: var(--edify-dark-blue);
+            border-radius: 8px;
+            cursor: pointer;
+            font-family: 'Ubuntu', sans-serif;
+            font-weight: 700;
+            font-size: 0.85em;
+            transition: all 0.3s ease;
+            margin-bottom: 10px;
+            width: 100%;
+        }
+        
+        .select-all-btn:hover {
+            background: var(--edify-dark-blue);
+            color: var(--edify-white);
+        }
+        
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 0.9em;
+            margin-top: 30px;
+            grid-column: 1 / -1;
+        }
+        
+        @media (max-width: 1024px) {
+            .main-container {
+                grid-template-columns: 1fr;
+            }
+            
+            .sidebar {
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            }
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 1.8em;
+            }
+            
+            .sidebar {
+                grid-template-columns: 1fr;
+            }
+            
+            .canvas-wrapper {
+                height: 350px;
+            }
+            
+            .chart-header {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .legend-custom {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(36, 36, 38, 0.8);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            backdrop-filter: blur(5px);
+        }
+        
+        .loading-overlay.active {
+            display: flex;
+        }
+        
+        .loading-content {
+            background: var(--edify-white);
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+        }
+        
+        .loading-spinner {
+            width: 50px;
+            height: 50px;
+            border: 5px solid var(--edify-light-gray);
+            border-top: 5px solid var(--edify-dark-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            font-size: 1.2em;
+            font-weight: 700;
+            color: var(--edify-dark-blue);
+        }
+    </style>
+</head>
+<body>
+    <div class="loading-overlay" id="loadingOverlay">
+        <div class="loading-content">
+            <div class="loading-spinner"></div>
+            <div class="loading-text">Atualizando gráfico...</div>
+        </div>
+    </div>
+
+    <div class="header">
+        <h1>📊 Edify Play - Dashboard Interativo</h1>
+        <p>Análise Comparativa de Atividades por Programa e Nível Educacional</p>
+        <div class="metadata">
+            <div class="metadata-item">
+                <span class="icon">📅</span>
+                <span><strong>Período:</strong> Q1-2024 a Q3-2025</span>
+            </div>
+            <div class="metadata-item">
+                <span class="icon">👤</span>
+                <span><strong>Usuário:</strong> ntoledo81</span>
+            </div>
+            <div class="metadata-item">
+                <span class="icon">🕐</span>
+                <span><strong>Atualizado:</strong> 2025-10-14 17:24:43</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="main-container">
+        <div class="sidebar">
+            <div class="filter-card">
+                <h3>🎓 Programa</h3>
+                <div class="filter-options">
+                    <label class="filter-option active" data-type="program" data-value="premium">
+                        <input type="checkbox" checked onchange="toggleFilter('program', 'premium', this)">
+                        <span class="filter-icon">P</span>
+                        <span>Premium</span>
+                    </label>
+                    <label class="filter-option active" data-type="program" data-value="essential">
+                        <input type="checkbox" checked onchange="toggleFilter('program', 'essential', this)">
+                        <span class="filter-icon">E</span>
+                        <span>Essential</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="filter-card">
+                <h3>👥 Nível Educacional</h3>
+                <div class="filter-options">
+                    <label class="filter-option active" data-type="level" data-value="iniciais">
+                        <input type="checkbox" checked onchange="toggleFilter('level', 'iniciais', this)">
+                        <span class="filter-icon">📖</span>
+                        <span>Anos Iniciais</span>
+                    </label>
+                    <label class="filter-option active" data-type="level" data-value="finais">
+                        <input type="checkbox" checked onchange="toggleFilter('level', 'finais', this)">
+                        <span class="filter-icon">📚</span>
+                        <span>Anos Finais</span>
+                    </label>
+                </div>
+            </div>
+            
+            <div class="filter-card">
+                <h3>📋 Tipo de Atividade</h3>
+                <button class="select-all-btn" onclick="toggleAllActivities()">Selecionar Todas</button>
+                <div class="filter-options">
+                    <label class="filter-option active" data-type="activity" data-value="activity">
+                        <input type="checkbox" checked onchange="toggleFilter('activity', 'activity', this)">
+                        <span class="filter-icon icon-activity">📚</span>
+                        <span>Activity</span>
+                    </label>
+                    <label class="filter-option active" data-type="activity" data-value="bonus">
+                        <input type="checkbox" checked onchange="toggleFilter('activity', 'bonus', this)">
+                        <span class="filter-icon icon-bonus">🎁</span>
+                        <span>Bonus</span>
+                    </label>
+                    <label class="filter-option active" data-type="activity" data-value="checkpoint">
+                        <input type="checkbox" checked onchange="toggleFilter('activity', 'checkpoint', this)">
+                        <span class="filter-icon icon-checkpoint">✓</span>
+                        <span>Checkpoint</span>
+                    </label>
+                    <label class="filter-option active" data-type="activity" data-value="greenhouse">
+                        <input type="checkbox" checked onchange="toggleFilter('activity', 'greenhouse', this)">
+                        <span class="filter-icon icon-greenhouse">🌱</span>
+                        <span>Greenhouse</span>
+                    </label>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chart-main">
+            <div class="chart-header">
+                <div class="chart-title-section">
+                    <div class="chart-main-icon">📈</div>
+                    <div class="chart-title-text">
+                        <h2>Análise de Engajamento</h2>
+                        <div class="subtitle">Selecione os filtros para visualizar os dados</div>
+                    </div>
+                </div>
+                <div class="selection-badges" id="selectionBadges">
+                    <div class="badge count">
+                        <span>📊</span>
+                        <span id="datasetCount">8 séries de dados</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="chartContainer">
+                <div class="canvas-wrapper">
+                    <canvas id="mainChart"></canvas>
+                </div>
+                <div class="legend-custom" id="customLegend">
+                    <div class="legend-item">
+                        <div class="legend-line solid" style="background: #4219B5;"></div>
+                        <span>Premium - Activity</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-line solid" style="background: #FF2726;"></div>
+                        <span>Premium - Bonus</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-line solid" style="background: #00AA9E;"></div>
+                        <span>Premium - Checkpoint</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-line solid" style="background: #FFC20E;"></div>
+                        <span>Premium - Greenhouse</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-line dashed" style="background: linear-gradient(to right, #4CD1F6 50%, transparent 50%); background-size: 8px 3px;"></div>
+                        <span>Essential - Activity</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-line dashed" style="background: linear-gradient(to right, #FF2726 50%, transparent 50%); background-size: 8px 3px;"></div>
+                        <span>Essential - Bonus</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-line dashed" style="background: linear-gradient(to right, #00AA9E 50%, transparent 50%); background-size: 8px 3px;"></div>
+                        <span>Essential - Checkpoint</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-line dashed" style="background: linear-gradient(to right, #FFC20E 50%, transparent 50%); background-size: 8px 3px;"></div>
+                        <span>Essential - Greenhouse</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="emptyState" style="display: none;">
+                <div class="empty-state">
+                    <div class="empty-state-icon">📊</div>
+                    <h3>Nenhum dado selecionado</h3>
+                    <p>Selecione ao menos um filtro para visualizar os dados</p>
+                    <button class="reset-btn" onclick="resetFilters()">Resetar Filtros</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="footer">
+        <p><strong>Edify Play App</strong> - Dashboard Interativo de Análise de Engajamento</p>
+        <p>Dados referentes ao período Q1-2024 a Q3-2025 • Média de atividades por aluno</p>
+    </div>
+    
+    <script>
+        // Edify Brand Colors
+        const COLORS = {
+            darkBlue: '#4219B5',
+            red: '#FF2726',
+            yellow: '#FFC20E',
+            green: '#00AA9E',
+            lightBlue: '#4CD1F6',
+            lightGray: '#F2F2F2',
+            black: '#242426',
+            white: '#FFFFFF'
+        };
+        
+        // Color mapping for activities and programs
+        const LINE_STYLES = {
+            premium: {
+                activity: { 
+                    iniciais: { color: COLORS.darkBlue, dash: [], width: 3 },
+                    finais: { color: COLORS.darkBlue, dash: [10, 5], width: 3 }
+                },
+                bonus: { 
+                    iniciais: { color: COLORS.red, dash: [], width: 3 },
+                    finais: { color: COLORS.red, dash: [10, 5], width: 3 }
+                },
+                checkpoint: { 
+                    iniciais: { color: COLORS.green, dash: [], width: 3 },
+                    finais: { color: COLORS.green, dash: [10, 5], width: 3 }
+                },
+                greenhouse: { 
+                    iniciais: { color: COLORS.yellow, dash: [], width: 3 },
+                    finais: { color: COLORS.yellow, dash: [10, 5], width: 3 }
+                }
+            },
+            essential: {
+                activity: { 
+                    iniciais: { color: COLORS.lightBlue, dash: [], width: 3 },
+                    finais: { color: COLORS.lightBlue, dash: [2, 3], width: 3 }
+                },
+                bonus: { 
+                    iniciais: { color: COLORS.red, dash: [15, 5], width: 3 },
+                    finais: { color: COLORS.red, dash: [2, 3], width: 3 }
+                },
+                checkpoint: { 
+                    iniciais: { color: COLORS.green, dash: [15, 5], width: 3 },
+                    finais: { color: COLORS.green, dash: [2, 3], width: 3 }
+                },
+                greenhouse: { 
+                    iniciais: { color: COLORS.yellow, dash: [15, 5], width: 3 },
+                    finais: { color: COLORS.yellow, dash: [2, 3], width: 3 }
+                }
+            }
+        };
+        
+        // Data
+        const quarters = ['Q1-24', 'Q2-24', 'Q3-24', 'Q4-24', 'Q1-25', 'Q2-25', 'Q3-25'];
+        
+        const data = {
+            premium: {
+                activity: {
+                    iniciais: [33.76, 87.04, 66.33, 114.79, 63.65, 98.72, 41.92],
+                    finais: [64.06, 89.41, 66.64, 115.84, 72.52, 120.43, 60.21]
+                },
+                bonus: {
+                    iniciais: [4.02, 20.50, 21.62, 25.33, 14.95, 19.30, 9.60],
+                    finais: [3.21, 18.93, 18.91, 20.26, 15.62, 21.27, 11.68]
+                },
+                checkpoint: {
+                    iniciais: [13.45, 22.73, 22.97, 27.47, 16.29, 22.94, 22.94],
+                    finais: [23.07, 21.64, 21.59, 25.12, 16.79, 23.37, 14.84]
+                },
+                greenhouse: {
+                    iniciais: [null, null, 5.04, 6.26, 4.37, 6.90, 3.88],
+                    finais: [null, null, 6.56, 7.60, 4.90, 6.49, 3.32]
+                }
+            },
+            essential: {
+                activity: {
+                    iniciais: [51.28, 95.54, 68.71, 98.64, 62.42, 87.22, 37.83],
+                    finais: [48.12, 114.73, 72.77, 151.31, 81.30, 134.98, 57.73]
+                },
+                bonus: {
+                    iniciais: [4.08, 32.87, 41.62, 38.23, 21.42, 25.55, 12.07],
+                    finais: [4.02, 27.35, 39.80, 43.52, 21.18, 27.40, 14.89]
+                },
+                checkpoint: {
+                    iniciais: [18.79, 30.69, 25.71, 31.62, 17.70, 23.77, 13.57],
+                    finais: [18.87, 33.36, 29.28, 41.08, 39.78, 27.71, 21.19]
+                },
+                greenhouse: {
+                    iniciais: [null, null, 5.12, 6.83, 3.96, 5.37, 3.45],
+                    finais: [null, null, 6.23, 9.80, 5.80, 9.03, 4.10]
+                }
+            }
+        };
+        
+        // Active filters
+        let activeFilters = {
+            program: ['premium', 'essential'],
+            level: ['iniciais', 'finais'],
+            activity: ['activity', 'bonus', 'checkpoint', 'greenhouse']
+        };
+        
+        // Chart instance
+        let mainChart = null;
+        
+        // Activity labels
+        const activityLabels = {
+            activity: 'Activity',
+            bonus: 'Bonus',
+            checkpoint: 'Checkpoint',
+            greenhouse: 'Greenhouse'
+        };
+        
+        const levelLabels = {
+            iniciais: 'Anos Iniciais',
+            finais: 'Anos Finais'
+        };
+        
+        // Toggle filter
+        function toggleFilter(type, value, checkbox) {
+            const option = checkbox.closest('.filter-option');
+            
+            if (checkbox.checked) {
+                option.classList.add('active');
+                if (!activeFilters[type].includes(value)) {
+                    activeFilters[type].push(value);
+                }
+            } else {
+                option.classList.remove('active');
+                activeFilters[type] = activeFilters[type].filter(v => v !== value);
+            }
+            
+            updateChart();
+        }
+        
+        // Toggle all activities
+        function toggleAllActivities() {
+            const allChecked = activeFilters.activity.length === 4;
+            const checkboxes = document.querySelectorAll('[data-type="activity"] input[type="checkbox"]');
+            
+            checkboxes.forEach(checkbox => {
+                checkbox.checked = !allChecked;
+                const option = checkbox.closest('.filter-option');
+                if (!allChecked) {
+                    option.classList.add('active');
+                } else {
+                    option.classList.remove('active');
+                }
+            });
+            
+            if (!allChecked) {
+                activeFilters.activity = ['activity', 'bonus', 'checkpoint', 'greenhouse'];
+            } else {
+                activeFilters.activity = [];
+            }
+            
+            updateChart();
+        }
+        
+        // Reset filters
+        function resetFilters() {
+            activeFilters = {
+                program: ['premium', 'essential'],
+                level: ['iniciais', 'finais'],
+                activity: ['activity', 'bonus', 'checkpoint', 'greenhouse']
+            };
+            
+            document.querySelectorAll('.filter-option').forEach(option => {
+                option.classList.add('active');
+                const checkbox = option.querySelector('input[type="checkbox"]');
+                if (checkbox) checkbox.checked = true;
+            });
+            
+            updateChart();
+        }
+        
+        // Generate datasets
+        function generateDatasets() {
+            const datasets = [];
+            
+            activeFilters.program.forEach(program => {
+                activeFilters.activity.forEach(activity => {
+                    activeFilters.level.forEach(level => {
+                        const activityData = data[program][activity][level];
+                        const style = LINE_STYLES[program][activity][level];
+                        
+                        datasets.push({
+                            label: `${program.charAt(0).toUpperCase() + program.slice(1)} - ${activityLabels[activity]} - ${levelLabels[level]}`,
+                            data: activityData,
+                            borderColor: style.color,
+                            backgroundColor: style.color,
+                            pointBackgroundColor: style.color,
+                            pointBorderColor: COLORS.white,
+                            borderWidth: style.width,
+                            borderDash: style.dash,
+                            tension: 0.4,
+                            spanGaps: true,
+                            pointRadius: 5,
+                            pointHoverRadius: 7,
+                            pointBorderWidth: 2,
+                            pointHoverBorderWidth: 3
+                        });
+                    });
+                });
+            });
+            
+            return datasets;
+        }
+        
+        // Update chart
+        function updateChart() {
+            const loadingOverlay = document.getElementById('loadingOverlay');
+            loadingOverlay.classList.add('active');
+            
+            setTimeout(() => {
+                const datasets = generateDatasets();
+                const datasetCount = datasets.length;
+                
+                // Update count badge
+                document.getElementById('datasetCount').textContent = `${datasetCount} série${datasetCount !== 1 ? 's' : ''} de dados`;
+                
+                if (datasetCount === 0) {
+                    // Show empty state
+                    document.getElementById('chartContainer').style.display = 'none';
+                    document.getElementById('emptyState').style.display = 'block';
+                    if (mainChart) {
+                        mainChart.destroy();
+                        mainChart = null;
+                    }
+                } else {
+                    // Show chart
+                    document.getElementById('chartContainer').style.display = 'block';
+                    document.getElementById('emptyState').style.display = 'none';
+                    
+                    if (mainChart) {
+                        mainChart.data.datasets = datasets;
+                        mainChart.update('active');
+                    } else {
+                        createChart(datasets);
+                    }
+                }
+                
+                loadingOverlay.classList.remove('active');
+            }, 400);
+        }
+        
+        // Create chart
+        function createChart(datasets) {
+            const ctx = document.getElementById('mainChart');
+            
+            mainChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: quarters,
+                    datasets: datasets
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    interaction: {
+                        mode: 'index',
+                        intersect: false,
+                    },
+                    plugins: {
+                        legend: {
+                            display: true,
+                            position: 'bottom',
+                            labels: {
+                                font: {
+                                    family: 'Ubuntu',
+                                    size: 10,
+                                    weight: 'bold'
+                                },
+                                color: COLORS.black,
+                                padding: 12,
+                                usePointStyle: true,
+                                pointStyle: 'line',
+                                boxWidth: 40,
+                                boxHeight: 3,
+                                generateLabels: function(chart) {
+                                    const datasets = chart.data.datasets;
+                                    return datasets.map((dataset, i) => ({
+                                        text: dataset.label,
+                                        fillStyle: dataset.backgroundColor,
+                                        strokeStyle: dataset.borderColor,
+                                        lineWidth: dataset.borderWidth,
+                                        lineDash: dataset.borderDash,
+                                        hidden: !chart.isDatasetVisible(i),
+                                        index: i
+                                    }));
+                                }
+                            },
+                            onClick: function(e, legendItem, legend) {
+                                const index = legendItem.index;
+                                const chart = legend.chart;
+                                const meta = chart.getDatasetMeta(index);
+                                
+                                meta.hidden = meta.hidden === null ? !chart.data.datasets[index].hidden : null;
+                                chart.update();
+                            }
+                        },
+                        tooltip: {
+                            backgroundColor: COLORS.black,
+                            titleColor: COLORS.white,
+                            bodyColor: COLORS.white,
+                            titleFont: {
+                                family: 'Ubuntu',
+                                size: 14,
+                                weight: 'bold'
+                            },
+                            bodyFont: {
+                                family: 'Ubuntu',
+                                size: 12
+                            },
+                            padding: 15,
+                            borderColor: COLORS.darkBlue,
+                            borderWidth: 2,
+                            displayColors: true,
+                            boxPadding: 5,
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (context.parsed.y !== null) {
+                                        label += ': ' + context.parsed.y.toFixed(2) + ' atividades';
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            grid: {
+                                color: 'rgba(0, 0, 0, 0.05)',
+                                drawBorder: false
+                            },
+                            ticks: {
+                                font: {
+                                    family: 'Ubuntu',
+                                    size: 12,
+                                    weight: 'bold'
+                                },
+                                color: COLORS.black,
+                                callback: function(value) {
+                                    return value.toFixed(0);
+                                }
+                            },
+                            title: {
+                                display: true,
+                                text: 'Média de Atividades por Aluno',
+                                font: {
+                                    family: 'Ubuntu',
+                                    size: 13,
+                                    weight: 'bold'
+                                },
+                                color: COLORS.black
+                            }
+                        },
+                        x: {
+                            grid: {
+                                display: false,
+                                drawBorder: false
+                            },
+                            ticks: {
+                                font: {
+                                    family: 'Ubuntu',
+                                    size: 12,
+                                    weight: 'bold'
+                                },
+                                color: COLORS.black
+                            },
+                            title: {
+                                display: true,
+                                text: 'Trimestre',
+                                font: {
+                                    family: 'Ubuntu',
+                                    size: 13,
+                                    weight: 'bold'
+                                },
+                                color: COLORS.black
+                            }
+                        }
+                    },
+                    animation: {
+                        duration: 800,
+                        easing: 'easeInOutQuart'
+                    }
+                }
+            });
+        }
+        
+        // Initialize on page load
+        window.addEventListener('load', () => {
+            updateChart();
+        });
+    </script>
+</body>
+</html>
